@@ -1,6 +1,7 @@
 from re import S
 import pyspark
 from pyspark.sql import SparkSession
+from pyspark.sql.functions import count, when,col
 
 STORAGEACCOUNTURL = "https://trainingbatchaccount.blob.core.windows.net"
 STORAGEACCOUNTKEY = "2QPPHsAtQ8/fh33VE7wqg/ZaeJoxdq/pnevAEmCh0n32tC5eXa8dTEEwMHdD9Ff5k1/wVh97aubqgKzQSwOLnQ=="
@@ -21,4 +22,7 @@ df_geo = df_geo.drop('elevation_m','openstreetmap_id')
 #Fill null values with zero
 df_geo = df_geo.na.fill(0, subset=['area_sq_km','area_rural_sq_km','area_urban_sq_km'])
 
-df_geo.show()
+#Check null values exist
+df_geo.select([count(when(col(c).isNull(), c)).alias(c) for c in df_geo.columns]).show()
+
+
