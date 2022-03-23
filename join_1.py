@@ -58,5 +58,8 @@ div_value = ratio[0] + ratio[1]
 addpopulation_male = when(col("population_male").isNull(), (col("population") / div_value)*ratio[0]).otherwise(col("population_male"))
 df_demo = df_demo.withColumn("population_male", addpopulation_male)
 
+#fill null population_female 
+addpopulation_female = when(col("population_female").isNull(), (col("population") / div_value)*ratio[1]).otherwise(col("population_female"))
+df_demo = df_demo.withColumn("population_female", addpopulation_female)
 displayNullCount(df_demo)
 
