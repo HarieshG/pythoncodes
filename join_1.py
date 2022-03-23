@@ -14,4 +14,4 @@ spark.conf.set(
 df_geo = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/demographics.csv")
 
 #Describe geo data
-df_geo.show()
+df_geo.describe()
