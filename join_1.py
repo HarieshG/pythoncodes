@@ -52,5 +52,6 @@ df_demo = df_demo.na.fill(0, subset=['population_rural', 'population_clustered',
 df_value = df_demo.agg(avg(df_demo.population_male), avg(df_demo.population_female)).collect()
 v_avg = df_value[0][0]/df_value[0][1]
 ratio = v_avg.as_integer_ratio()
-print(ratio[0]+"/"+ratio[1])
+print(ratio[0])
+print(ratio[1])
 
