@@ -52,6 +52,11 @@ df_demo = df_demo.na.fill(0, subset=['population_rural', 'population_clustered',
 df_value = df_demo.agg(avg(df_demo.population_male), avg(df_demo.population_female)).collect()
 v_avg = df_value[0][0]/df_value[0][1]
 ratio = v_avg.as_integer_ratio()
-print(ratio[0])
-print(ratio[1])
+div_value = ratio[0] + ratio[1]
+
+#fill null population_male 
+addpopulation_male = when(col("population_male").isNull(), (col("population") / div_value)*ratio[0]).otherwise(col("population_male"))
+df_demo = df_demo.withColumn("population_male", addpopulation_male)
+
+df_demo.show()
 
