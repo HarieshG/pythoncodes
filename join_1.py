@@ -1,7 +1,7 @@
 from re import S
 import pyspark
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import count, when,col
+from pyspark.sql.functions import count, when,col,expr
 
 STORAGEACCOUNTURL = "https://trainingbatchaccount.blob.core.windows.net"
 STORAGEACCOUNTKEY = "2QPPHsAtQ8/fh33VE7wqg/ZaeJoxdq/pnevAEmCh0n32tC5eXa8dTEEwMHdD9Ff5k1/wVh97aubqgKzQSwOLnQ=="
