@@ -33,8 +33,8 @@ def summation(*arguments):
     return total
 
 new_func = udf(summation, IntegerType())
-
+print(new_func('population_male','population_female'))
 #Replace null population with male and female pop
-df_demo = df_demo.na.fill(new_func('population_male','population_female'), subset=['population'])
+# df_demo = df_demo.na.fill(new_func('population_male','population_female'), subset=['population'])
 
 df_demo.show()
