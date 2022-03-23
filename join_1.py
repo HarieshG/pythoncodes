@@ -50,5 +50,5 @@ df_demo = df_demo.na.fill(0, subset=['population_rural', 'population_clustered',
 
 #sum of rows
 df_value = df_demo.agg(avg(df_demo.population_male), avg(df_demo.population_female)).collect()
-print(df_value[0][2])
+print(df_value[0][1])
 
