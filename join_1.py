@@ -11,7 +11,7 @@ spark.conf.set(
         STORAGEACCOUNTKEY
 )
 #Reading geography dataset
-df_geo = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/demographics.csv")
+df_geo = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/geographics.csv")
 
 
 #Drop openstreetmapid & elevation_m
