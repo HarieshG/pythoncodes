@@ -25,6 +25,6 @@ df_geo = df_geo.na.fill(0, subset=['area_sq_km','area_rural_sq_km','area_urban_s
 df_demo = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/demographics.csv")
 
 #Replace null population with male and female pop
-df_demo = df_demo.na.fill(col(df_demo['population_male']), subset=['population'])
+df_demo = df_demo.na.fill(expr('population_male + population_female'), subset=['population'])
 
 df_demo.show()
