@@ -65,7 +65,7 @@ df_demo = df_demo.withColumn("population_female", addpopulation_female)
 # df_geo = df_geo.withColumnRenamed('location_key','location_keygeo')
 
 #join
-df_join_1 = df_demo.join(df_geo, df_geo.location_key == df_demo.location_key,'inner').show()
+df_join_1 = df_demo.join(df_geo, df_geo.location_key == df_demo.location_key,'inner')
 
 displayNullCount(df_join_1)
 
