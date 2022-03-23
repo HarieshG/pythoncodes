@@ -15,6 +15,6 @@ df_geo = spark.read.format('csv').option('header',True).option('inferSchema',Tru
 
 
 #Drop openstreetmapid & elevation_m
-df_geo = df_geo.drop(['elevation_m','openstreetmap_id'])
+df_geo = df_geo.drop('elevation_m','openstreetmap_id')
 
 df_geo.show()
