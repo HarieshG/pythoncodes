@@ -62,6 +62,8 @@ df_demo = df_demo.withColumn("population_male", addpopulation_male)
 addpopulation_female = when(col("population_female").isNull(), (col("population") / div_value)*ratio[1]).otherwise(col("population_female"))
 df_demo = df_demo.withColumn("population_female", addpopulation_female)
 
+df_geo = df_geo.withColumnRenamed('location_key','location_keygeo')
+
 #join
 df_demo.join(df_demo, df_geo.location_key == df_geo.location_key,'inner').show()
 
