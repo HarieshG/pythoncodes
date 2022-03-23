@@ -10,5 +10,8 @@ spark.conf.set(
         "fs.azure.account.key.trainingbatchaccount.blob.core.windows.net",
         STORAGEACCOUNTKEY
 )
-sdf = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/demographics.csv")
-sdf.show()
+#Reading geography dataset
+df_geo = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/demographics.csv")
+
+#Describe geo data
+df_geo.show()
