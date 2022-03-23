@@ -4,6 +4,8 @@ import pyspark
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import count, when,col,expr, udf, avg
 from  pyspark.sql.types import IntegerType
+from pyspark.ml.feature import Imputer
+
 
 # -----------------------------FUNCTIONS-----------------------------------------------
 
@@ -80,6 +82,17 @@ df_join_2 = df_join_1.join(df_eco, df_eco.location_key == df_join_1.location_key
 
 df_join_2.printSchema()
 
+#----------------------Health---------------------
+df_health = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/health.csv")
+
+# filling the null values in the life_expectancy column with the mean of it
+imputer = Imputer(inputCol='life_expectancy',outputCol="life_expectancy").setStrategy("mean")
+health_df = imputer.fit(df_health).transform(df_health)
+
+#----------------------Join_3---------------------
+df_join_3 = df_join_2.join(df_health, df_health.location_key == df_join_2.location_key,'inner').drop(df_health.location_key)
+
+df_join_3.printSchema()
 
 
 
