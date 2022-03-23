@@ -20,7 +20,7 @@ df_geo = spark.read.format('csv').option('header',True).option('inferSchema',Tru
 df_geo = df_geo.drop('elevation_m','openstreetmap_id')
 
 #Fill null values with zero
-df_geo = df_geo.na.fill(0, subset=['area_sq_km','area_rural_sq_km','area_urban_sq_km'])
+df_geo = df_geo.na.fill(0, subset=['area_sq_km','area_rural_sq_km','area_urban_sq_km','lattitude','longitude'])
 
 #Check null values exist
 df_geo.select([count(when(col(c).isNull(), c)).alias(c) for c in df_geo.columns]).show()
