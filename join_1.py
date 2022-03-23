@@ -29,6 +29,8 @@ spark.conf.set(
         "fs.azure.account.key.trainingbatchaccount.blob.core.windows.net",
         STORAGEACCOUNTKEY
 )
+#----------------------Geography---------------------
+
 #Reading geography dataset
 df_geo = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/geography.csv")
 
@@ -37,6 +39,8 @@ df_geo = df_geo.drop('elevation_m','openstreetmap_id')
 
 #Fill null values with zero
 df_geo = df_geo.na.fill(0, subset=['area_sq_km','area_rural_sq_km','area_urban_sq_km','latitude','longitude'])
+
+#----------------------Demographics---------------------
 
 #Reading demographics dataset
 df_demo = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/demographics.csv")
@@ -62,12 +66,21 @@ df_demo = df_demo.withColumn("population_male", addpopulation_male)
 addpopulation_female = when(col("population_female").isNull(), (col("population") / div_value)*ratio[1]).otherwise(col("population_female"))
 df_demo = df_demo.withColumn("population_female", addpopulation_female)
 
-# df_geo = df_geo.withColumnRenamed('location_key','location_keygeo')
-
-#join
+#----------------------Join_1---------------------
 df_join_1 = df_demo.join(df_geo, df_geo.location_key == df_demo.location_key,'inner').drop(df_demo.location_key)
 
-displayNullCount(df_join_1)
+#----------------------Economy---------------------
+df_eco = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/economy.csv")
+
+#fill null with zero
+df_eco = df_eco.na.fill(0)
+
+#----------------------Join_2---------------------
+df_join_2 = df_join_1.join(df_eco, df_eco.location_key == df_join_1.location_key,'inner').drop(df_eco.location_key)
+
+df_join_2.printSchema()
+
+
 
 
 
