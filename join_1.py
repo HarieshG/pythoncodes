@@ -13,5 +13,8 @@ spark.conf.set(
 #Reading geography dataset
 df_geo = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/demographics.csv")
 
-#Describe geo data
-df_geo.describe().show()
+
+#Drop openstreetmapid & elevation_m
+df_geo = df_geo.drop(['elevation_m','openstreetmap_id'])
+
+df_geo.show()
