@@ -2,7 +2,7 @@ import dis
 from re import S
 import pyspark
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import count, when,col,expr, udf, sum
+from pyspark.sql.functions import count, when,col,expr, udf, avg
 from  pyspark.sql.types import IntegerType
 
 # -----------------------------FUNCTIONS-----------------------------------------------
@@ -49,6 +49,6 @@ df_demo = df_demo.withColumn("population", addpopulation)
 df_demo = df_demo.na.fill(0, subset=['population_rural', 'population_clustered','population_urban','population_largest_city','population_largest_city','population_density','human_development_index',	'population_age_00_09','population_age_10_19',	'population_age_20_29',	'population_age_30_39',	'population_age_40_49'	,'population_age_50_59'	,'population_age_60_69',	'population_age_70_79'	,'population_age_80_and_older'])
 
 #sum of rows
-df_value = df_demo.agg(sum(df_demo.population_male), sum(df_demo.population_female))
-df_value.show()
+df_value = df_demo.agg(avg(df_demo.population_male), avg(df_demo.population_female)).collect()
+print(df_value[0][2])
 
