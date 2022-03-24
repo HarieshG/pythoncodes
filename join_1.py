@@ -109,7 +109,7 @@ df_epidemiology = df_epidemiology.withColumn('date',to_date(df_epidemiology['dat
 
 df_epidemiology.printSchema()
 
-df_epidemiology['new_confirmed'].interpolate(method="linear")
+df_epidemiology.interpolate(method="linear")
 
 displayNullCount(df_epidemiology)
 
