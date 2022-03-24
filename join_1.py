@@ -103,8 +103,9 @@ spark.conf.set(
 #----------------------Epidemiology---------------------
 df_epidemiology = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/epidemiology.csv")
 
-df_epidemiology.drop('cumulative_tested','cumulative_confirmed','cumulative_deceased','cumulative_recovered')
+df_epidemiology = df_epidemiology.drop('cumulative_tested','cumulative_confirmed','cumulative_deceased','cumulative_recovered')
 
+df_epidemiology['new_tested'].interpolate(method='linear')
 displayNullCount(df_epidemiology)
 
 
