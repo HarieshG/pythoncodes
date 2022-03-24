@@ -99,12 +99,12 @@ spark.conf.set(
 # #----------------------Join_3---------------------
 # df_join_3 = df_join_2.join(df_health, df_health.location_key == df_join_2.location_key,'inner').drop(df_health.location_key)
 
-# #----------------------Epidemiology---------------------
-# df_epidemiology = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/epidemiology.csv")
+#----------------------Epidemiology---------------------
+df_epidemiology = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/epidemiology.csv")
 
-# df_epidemiology = df_epidemiology.withColumn('date',to_date(df_epidemiology['date'],format='yyyy-mm-dd'))
+df_epidemiology = df_epidemiology.withColumn('date',to_date(df_epidemiology['date'],format='yyyy-mm-dd'))
 
-# df_epidemiology = df_epidemiology.na.fill(value=0)
+df_epidemiology = df_epidemiology.na.fill(value=0)
 
 
 #---------------------------------Opening government response dataset and cleaning it-------------------
@@ -182,5 +182,8 @@ df_join_6 = df_weather.join(df_hos, on = ['Date', 'location_key'],how =  'leftou
 #------------------------------Joining Join_5 & Join_6----------------------------------------------------
 df_join_7 = df_join_6.join(df_join_5, on = ['Date', 'location_key'],how =  'leftouter').drop(df_hos.Date).drop(df_hos.location_key)
 
-df_join_7.describe().show()
+#------------------------------Joining Join_7 & Epidemology----------------------------------------------------
 
+df_join_n = df_epidemiology.join(df_join_7, on = ['Date', 'location_key'],how =  'leftouter').drop(df_join_7.Date).drop(df_join_7.location_key)
+
+df_join_7.printSchema()
