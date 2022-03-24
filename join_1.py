@@ -150,10 +150,16 @@ spark.conf.set(
 # df_join_5 = df_join_5.na.fill("")
 
 #---------------------------------Cleaning Index dataset---------------------------------------------------------------------
-df_index = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/index.csv")
-df_index = df_index.na.fill("")
-displayNullCount(df_index)
+# df_index = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/index.csv")
+# df_index = df_index.na.fill("")
 
+
+#-------------------------------------Vaccination------------------------------------------------
+df_vc = spark.read.format('csv').option('header',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/vaccination.csv")
+df_vc.na.drop(how = "all" )
+df_vc.na.fill(0)
+df_vc.show()
+displayNullCount(df_vc)
 
 
 
