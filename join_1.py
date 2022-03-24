@@ -108,7 +108,7 @@ df_epidemiology = spark.read.format('csv').option('header',True).option('inferSc
 
 df_epidemiology = df_epidemiology.withColumn('date',to_date(df_epidemiology['date'],format='dd-mm-yyyy'))
 
-df_epidemiology.na.fill(value=0)
+df_epidemiology = df_epidemiology.na.fill(value=0)
 displayNullCount(df_epidemiology)
 
 
