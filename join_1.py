@@ -41,49 +41,45 @@ spark.conf.set(
         "fs.azure.account.key.trainingbatchaccount.blob.core.windows.net",
         STORAGEACCOUNTKEY
 )
-#----------------------Geography---------------------
+# #----------------------Geography---------------------
 
-#Reading geography dataset
-df_geo = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/geography.csv")
+# #Reading geography dataset
+# df_geo = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/geography.csv")
 
-#Drop openstreetmapid & elevation_m
-df_geo = df_geo.drop('elevation_m','openstreetmap_id')
+# #Drop openstreetmapid & elevation_m
+# df_geo = df_geo.drop('elevation_m','openstreetmap_id')
 
-#Fill null values with zero
-df_geo = df_geo.na.fill(0, subset=['area_sq_km','area_rural_sq_km','area_urban_sq_km','latitude','longitude'])
+# #Fill null values with zero
+# df_geo = df_geo.na.fill(0, subset=['area_sq_km','area_rural_sq_km','area_urban_sq_km','latitude','longitude'])
 
-#----------------------Demographics---------------------
+# #----------------------Demographics---------------------
 
-#Reading demographics dataset
-df_demo = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/demographics.csv")
+# #Reading demographics dataset
+# df_demo = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/demographics.csv")
 
-#fill null population with sum of male & female population
-addpopulation = when(col("population").isNull(), (col("population_male") + col("population_female"))).otherwise(col("population"))
-df_demo = df_demo.withColumn("population", addpopulation)
+# #fill null population with sum of male & female population
+# addpopulation = when(col("population").isNull(), (col("population_male") + col("population_female"))).otherwise(col("population"))
+# df_demo = df_demo.withColumn("population", addpopulation)
 
-#Fill null values with zero
-df_demo = df_demo.na.fill(0, subset=['population_rural', 'population_clustered','population_urban','population_largest_city','population_largest_city','population_density','human_development_index',	'population_age_00_09','population_age_10_19',	'population_age_20_29',	'population_age_30_39',	'population_age_40_49'	,'population_age_50_59'	,'population_age_60_69',	'population_age_70_79'	,'population_age_80_and_older'])
+# #Fill null values with zero
+# df_demo = df_demo.na.fill(0, subset=['population_rural', 'population_clustered','population_urban','population_largest_city','population_largest_city','population_density','human_development_index',	'population_age_00_09','population_age_10_19',	'population_age_20_29',	'population_age_30_39',	'population_age_40_49'	,'population_age_50_59'	,'population_age_60_69',	'population_age_70_79'	,'population_age_80_and_older'])
 
-#sum of rows
-df_value = df_demo.agg(avg(df_demo.population_male), avg(df_demo.population_female)).collect()
-v_avg = df_value[0][0]/df_value[0][1]
-ratio = v_avg.as_integer_ratio()
-div_value = ratio[0] + ratio[1]
+# #sum of rows
+# df_value = df_demo.agg(avg(df_demo.population_male), avg(df_demo.population_female)).collect()
+# v_avg = df_value[0][0]/df_value[0][1]
+# ratio = v_avg.as_integer_ratio()
+# div_value = ratio[0] + ratio[1]
 
-#fill null population_male 
-addpopulation_male = when(col("population_male").isNull(), (col("population") / div_value)*ratio[0]).otherwise(col("population_male"))
-df_demo = df_demo.withColumn("population_male", addpopulation_male)
+# #fill null population_male 
+# addpopulation_male = when(col("population_male").isNull(), (col("population") / div_value)*ratio[0]).otherwise(col("population_male"))
+# df_demo = df_demo.withColumn("population_male", addpopulation_male)
 
-#fill null population_female 
-addpopulation_female = when(col("population_female").isNull(), (col("population") / div_value)*ratio[1]).otherwise(col("population_female"))
-df_demo = df_demo.withColumn("population_female", addpopulation_female)
+# #fill null population_female 
+# addpopulation_female = when(col("population_female").isNull(), (col("population") / div_value)*ratio[1]).otherwise(col("population_female"))
+# df_demo = df_demo.withColumn("population_female", addpopulation_female)
 
-#----------------------Join_1---------------------
-df_join_1 = df_demo.join(df_geo, df_geo.location_key == df_demo.location_key,'inner').drop(df_demo.location_key)
-displayNullCount(df_join_1)
-# df_join_1 = df_join_1.na.fill(value = 0)
-
-# df_join_1 = df_join_1.na.fill("")
+# #----------------------Join_1---------------------
+# df_join_1 = df_demo.join(df_geo, df_geo.location_key == df_demo.location_key,'inner').drop(df_demo.location_key)
 
 # #----------------------Economy---------------------
 # df_eco = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/economy.csv")
@@ -93,9 +89,6 @@ displayNullCount(df_join_1)
 
 # #----------------------Join_2---------------------
 # df_join_2 = df_join_1.join(df_eco, df_eco.location_key == df_join_1.location_key,'inner').drop(df_eco.location_key)
-# df_join_2 = df_join_2.na.fill(value = 0)
-
-# df_join_2 = df_join_2.na.fill("")
 
 
 # #----------------------Health---------------------
@@ -107,9 +100,6 @@ displayNullCount(df_join_1)
 
 # #----------------------Join_3---------------------
 # df_join_3 = df_join_2.join(df_health, df_health.location_key == df_join_2.location_key,'inner').drop(df_health.location_key)
-# df_join_3 = df_join_3.na.fill(value = 0)
-
-# df_join_3 = df_join_3.na.fill("")
 
 # #----------------------Epidemiology---------------------
 # df_epidemiology = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/epidemiology.csv")
@@ -117,47 +107,46 @@ displayNullCount(df_join_1)
 # df_epidemiology = df_epidemiology.withColumn('date',to_date(df_epidemiology['date'],format='yyyy-mm-dd'))
 
 # df_epidemiology = df_epidemiology.na.fill(value=0)
-# displayNullCount(df_join_3)
 
 
-# #---------------------------------Opening government response dataset and cleaning it-------------------
+#---------------------------------Opening government response dataset and cleaning it-------------------
 
-# df_gr = spark.read.format('csv').option('header',True).option('inferSchema', True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/governmentResponse.csv")
+df_gr = spark.read.format('csv').option('header',True).option('inferSchema', True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/governmentResponse.csv")
 
-# #removing the rows which have null values for all the columns
-# df_gr = df_gr.na.drop(how = "all", thresh = None, subset= None )
+#removing the rows which have null values for all the columns
+df_gr = df_gr.na.drop(how = "all", thresh = None, subset= None )
 
-# #replacing null values with 0 for columns having integer values
-# df_gr = df_gr.na.fill(value = 0)
+#replacing null values with 0 for columns having integer values
+df_gr = df_gr.na.fill(value = 0)
 
-# #replacing null values with empty string "" for columns having string values
-# df_gr = df_gr.na.fill("")
+#replacing null values with empty string "" for columns having string values
+df_gr = df_gr.na.fill("")
 
-# #formatting date
+#formatting date
 
-# df_gr = df_gr.withColumn('date',to_date(df_gr['date'],'yyyy-mm-dd'))
+df_gr = df_gr.withColumn('date',to_date(df_gr['date'],'yyyy-mm-dd'))
 
-# #---------------------------------Opening emergency decleration dataset and cleaning it----------------------
+#---------------------------------Opening emergency decleration dataset and cleaning it----------------------
 
-# df_ed = spark.read.format('csv').option('header',True).option('inferSchema', True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/emergencydec.csv")
+df_ed = spark.read.format('csv').option('header',True).option('inferSchema', True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/emergencydec.csv")
 
-# df_ed = df_ed.na.drop(how = "all", thresh = None, subset = None )
+df_ed = df_ed.na.drop(how = "all", thresh = None, subset = None )
 
-# df_ed = df_ed.na.fill(value = 0)
+df_ed = df_ed.na.fill(value = 0)
 
-# df_ed = df_ed.na.fill("")
+df_ed = df_ed.na.fill("")
 
-# #df_ed = df_ed.withColumn('date',to_date(df_ed['date'],format='yyyy-mm-dd'))
-# df_ed = df_ed.withColumn('date',to_date(df_ed['date'],'yyyy-mm-dd'))
+#df_ed = df_ed.withColumn('date',to_date(df_ed['date'],format='yyyy-mm-dd'))
+df_ed = df_ed.withColumn('date',to_date(df_ed['date'],'yyyy-mm-dd'))
 
-# #deleting empty columns
-# df_ed = df_ed.drop('lawatlas_requirement_type_traveler_must_self_quarantine', 'lawatlas_requirement_type_traveler_must_inform_others_of_travel', 'lawatlas_requirement_type_checkpoints_must_be_established', 'lawatlas_requirement_type_travel_requirement_must_be_posted', 'lawatlas_business_type_non_essential_retail_businesses', 'lawatlas_business_type_all_non_essential_businesses')
+#deleting empty columns
+df_ed = df_ed.drop('lawatlas_requirement_type_traveler_must_self_quarantine', 'lawatlas_requirement_type_traveler_must_inform_others_of_travel', 'lawatlas_requirement_type_checkpoints_must_be_established', 'lawatlas_requirement_type_travel_requirement_must_be_posted', 'lawatlas_business_type_non_essential_retail_businesses', 'lawatlas_business_type_all_non_essential_businesses')
 
-# #-------------------------------Joining emergency declaration and government response datasets-----------------------------
+#-------------------------------Joining emergency declaration and government response datasets-----------------------------
 
-# df_join_5 = df_gr.join(df_ed, on = ['date', 'location_key'],how =  'leftouter')
-# df_join_5 = df_ed.na.drop(how = "all", thresh = None, subset = None )
-
+df_join_5 = df_gr.join(df_ed, on = ['date', 'location_key'],how =  'leftouter')
+df_join_5 = df_ed.na.drop(how = "all", thresh = None, subset = None )
+displayNullCount(df_join_5)
 # df_join_5 = df_ed.na.fill(value = 0)
 
 # df_join_5 = df_ed.na.fill("")
