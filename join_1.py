@@ -105,7 +105,7 @@ df_epidemiology = spark.read.format('csv').option('header',True).option('inferSc
 
 df_epidemiology = df_epidemiology.drop('cumulative_tested','cumulative_confirmed','cumulative_deceased','cumulative_recovered')
 
-df_epidemiology = df_epidemiology.withColumn('date',to_date(df_csv['date'],format='dd-mm-yyyy'))
+df_epidemiology = df_epidemiology.withColumn('date',to_date(df_epidemiology['date'],format='dd-mm-yyyy'))
 
 df_epidemiology.printSchema()
 
