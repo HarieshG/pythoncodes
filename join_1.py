@@ -1,3 +1,10 @@
+#tailwy,date,createdby,objective
+#-----------------------------Tailwyndz LLC----------------------------------------------
+#-----------------------------Created on 23rd March 2022---------------------------------
+#-----------------------------Created by Hariesh-----------------------------------------
+#-----------------------------Data Cleaning & Joining of Covid datasets------------------
+
+
 import dis
 from re import S
 import pyspark
@@ -92,8 +99,13 @@ health_df = imputer.fit(df_health).transform(df_health)
 #----------------------Join_3---------------------
 df_join_3 = df_join_2.join(df_health, df_health.location_key == df_join_2.location_key,'inner').drop(df_health.location_key)
 
-df_join_3.printSchema()
 
+#----------------------Epidemiology---------------------
+df_epidemiology = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/epidemiology.csv")
+
+df_epidemiology.drop(['cumulative_tested','cumulative_confirmed','cumulative_deceased','cumulative_recovered'])
+
+displayNullCount(df_epidemiology)
 
 
 
