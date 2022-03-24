@@ -8,6 +8,7 @@
 import dis
 from re import S
 import pyspark
+import pandas
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import count, when,col,expr, udf, avg,to_date
 from  pyspark.sql.types import IntegerType
@@ -109,9 +110,10 @@ df_epidemiology = df_epidemiology.withColumn('date',to_date(df_epidemiology['dat
 
 df_epidemiology.printSchema()
 
-df_epidemiology.interpolate(method="linear")
+df_epid_pd = df_epidemiology.toPandas()
+df_epid_pd.interpolate(method="linear")
 
-displayNullCount(df_epidemiology)
+displayNullCount(df_epid_pd)
 
 
 
