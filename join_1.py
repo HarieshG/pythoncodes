@@ -106,7 +106,7 @@ spark.conf.set(
 #----------------------Epidemiology---------------------
 df_epidemiology = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/epidemiology.csv")
 
-df_epidemiology = df_epidemiology.withColumn('date',to_date(df_epidemiology['date'],format='dd-mm-yyyy'))
+df_epidemiology = df_epidemiology.withColumn('date',to_date(df_epidemiology['date'],format='yyyy-mm-dd'))
 
 df_epidemiology = df_epidemiology.na.fill(value=0)
 displayNullCount(df_epidemiology)
