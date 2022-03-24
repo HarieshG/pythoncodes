@@ -182,6 +182,5 @@ df_join_6 = df_weather.join(df_hos, on = ['Date', 'location_key'],how =  'leftou
 #------------------------------Joining Join_5 & Join_6----------------------------------------------------
 df_join_7 = df_join_6.join(df_join_5, on = ['Date', 'location_key'],how =  'leftouter').drop(df_hos.Date).drop(df_hos.location_key)
 
-df_join_7.printSchema()
-
+df_join_7.describe().show()
 
