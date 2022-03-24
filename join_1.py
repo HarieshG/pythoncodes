@@ -1,7 +1,5 @@
-#tailwy,date,createdby,objective
 #-----------------------------Tailwyndz LLC----------------------------------------------
 #-----------------------------Created on 23rd March 2022---------------------------------
-#-----------------------------Created by Hariesh-----------------------------------------
 #-----------------------------Data Cleaning & Joining of Covid datasets------------------
 
 
@@ -165,7 +163,7 @@ df_join_5 = df_join_5.na.fill("")
 
 df_weather = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/weather.csv")
 df_weather = df_weather.withColumn('Date',to_date(df_weather['Date'],'yyyy-mm-dd'))
-df_weather = df_weather.drop(df_weather.snowfall_mm)
+df_weather = df_weather.drop('snowfall_mm')
 df_weather = df_weather[df_weather.Date > "2019-12-31"]
 
 
@@ -174,8 +172,7 @@ df_weather = df_weather[df_weather.Date > "2019-12-31"]
 df_hos = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/hospitalizations.csv")
 df_hos = df_hos.withColumn('Date',to_date(df_hos['Date'],'dd-mm-yyyy'))
 df_hos = df_hos.fillna(value = 0, subset = ['current_hospitalized_patients','current_intensive_care_patients','new_ventilator_patients','cumulative_ventilator_patients','current_ventilator_patients'])
-df_hos = df_hos.drop(df_hos.cumulative_ventilator_patients)
-df_hos = df_hos.drop(df_hos.new_ventilator_patients)
+df_hos = df_hos.drop('cumulative_ventilator_patients','new_ventilator_patients')
 df_hos = df_hos[df_hos.Date > "2019-12-31"]
 
 
