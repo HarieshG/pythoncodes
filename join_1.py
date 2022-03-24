@@ -109,47 +109,51 @@ spark.conf.set(
 # df_epidemiology = df_epidemiology.na.fill(value=0)
 
 
-#---------------------------------Opening government response dataset and cleaning it-------------------
+# #---------------------------------Opening government response dataset and cleaning it-------------------
 
-df_gr = spark.read.format('csv').option('header',True).option('inferSchema', True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/governmentResponse.csv")
+# df_gr = spark.read.format('csv').option('header',True).option('inferSchema', True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/governmentResponse.csv")
 
-#removing the rows which have null values for all the columns
-df_gr = df_gr.na.drop(how = "all", thresh = None, subset= None )
+# #removing the rows which have null values for all the columns
+# df_gr = df_gr.na.drop(how = "all", thresh = None, subset= None )
 
-#replacing null values with 0 for columns having integer values
-df_gr = df_gr.na.fill(value = 0)
+# #replacing null values with 0 for columns having integer values
+# df_gr = df_gr.na.fill(value = 0)
 
-#replacing null values with empty string "" for columns having string values
-df_gr = df_gr.na.fill("")
+# #replacing null values with empty string "" for columns having string values
+# df_gr = df_gr.na.fill("")
 
-#formatting date
+# #formatting date
 
-df_gr = df_gr.withColumn('date',to_date(df_gr['date'],'yyyy-mm-dd'))
+# df_gr = df_gr.withColumn('date',to_date(df_gr['date'],'yyyy-mm-dd'))
 
-#---------------------------------Opening emergency decleration dataset and cleaning it----------------------
+# #---------------------------------Opening emergency decleration dataset and cleaning it----------------------
 
-df_ed = spark.read.format('csv').option('header',True).option('inferSchema', True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/emergencydec.csv")
+# df_ed = spark.read.format('csv').option('header',True).option('inferSchema', True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/emergencydec.csv")
 
-df_ed = df_ed.na.drop(how = "all", thresh = None, subset = None )
+# df_ed = df_ed.na.drop(how = "all", thresh = None, subset = None )
 
-df_ed = df_ed.na.fill(value = 0)
+# df_ed = df_ed.na.fill(value = 0)
 
-df_ed = df_ed.na.fill("")
+# df_ed = df_ed.na.fill("")
 
-#df_ed = df_ed.withColumn('date',to_date(df_ed['date'],format='yyyy-mm-dd'))
-df_ed = df_ed.withColumn('date',to_date(df_ed['date'],'yyyy-mm-dd'))
+# #df_ed = df_ed.withColumn('date',to_date(df_ed['date'],format='yyyy-mm-dd'))
+# df_ed = df_ed.withColumn('date',to_date(df_ed['date'],'yyyy-mm-dd'))
 
-#deleting empty columns
-df_ed = df_ed.drop('lawatlas_requirement_type_traveler_must_self_quarantine', 'lawatlas_requirement_type_traveler_must_inform_others_of_travel', 'lawatlas_requirement_type_checkpoints_must_be_established', 'lawatlas_requirement_type_travel_requirement_must_be_posted', 'lawatlas_business_type_non_essential_retail_businesses', 'lawatlas_business_type_all_non_essential_businesses')
+# #deleting empty columns
+# df_ed = df_ed.drop('lawatlas_requirement_type_traveler_must_self_quarantine', 'lawatlas_requirement_type_traveler_must_inform_others_of_travel', 'lawatlas_requirement_type_checkpoints_must_be_established', 'lawatlas_requirement_type_travel_requirement_must_be_posted', 'lawatlas_business_type_non_essential_retail_businesses', 'lawatlas_business_type_all_non_essential_businesses')
 
-#-------------------------------Joining emergency declaration and government response datasets-----------------------------
+# #-------------------------------Joining emergency declaration and government response datasets-----------------------------
 
-df_join_5 = df_gr.join(df_ed, on = ['date', 'location_key'],how =  'leftouter').drop(df_ed.date).drop(df_ed.location_key)
-df_join_5 = df_ed.na.drop(how = "all", thresh = None, subset = None )
-df_join_5 = df_ed.na.fill(value = 0)
-df_join_5 = df_ed.na.fill("")
+# df_join_5 = df_gr.join(df_ed, on = ['date', 'location_key'],how =  'leftouter').drop(df_ed.date).drop(df_ed.location_key)
+# df_join_5 = df_join_5.na.drop(how = "all", thresh = None, subset = None )
+# df_join_5 = df_join_5.na.fill(value = 0)
+# df_join_5 = df_join_5.na.fill("")
 
-df_join_5.printSchema()
+#---------------------------------Cleaning Index dataset---------------------------------------------------------------------
+df_index = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/index.csv")
+df_index = df_index.na.fill("")
+displayNullCount(df_index)
+
 
 
 
