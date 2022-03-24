@@ -9,7 +9,7 @@ import dis
 from re import S
 import pyspark
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import count, when,col,expr, udf, avg
+from pyspark.sql.functions import count, when,col,expr, udf, avg,to_date
 from  pyspark.sql.types import IntegerType
 from pyspark.ml.feature import Imputer
 
@@ -105,7 +105,12 @@ df_epidemiology = spark.read.format('csv').option('header',True).option('inferSc
 
 df_epidemiology = df_epidemiology.drop('cumulative_tested','cumulative_confirmed','cumulative_deceased','cumulative_recovered')
 
-df_epidemiology['new_tested'].interpolate(method='linear')
+df_epidemiology = df_epidemiology.withColumn('date',to_date(df_csv['date'],format='dd-mm-yyyy'))
+
+df_epidemiology.printSchema()
+
+df_epidemiology.set_index('date')['Value'].interpolate(method="linear")
+
 displayNullCount(df_epidemiology)
 
 
