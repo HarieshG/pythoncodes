@@ -80,90 +80,88 @@ df_demo = df_demo.withColumn("population_female", addpopulation_female)
 
 #----------------------Join_1---------------------
 df_join_1 = df_demo.join(df_geo, df_geo.location_key == df_demo.location_key,'inner').drop(df_demo.location_key)
-df_join_1 = df_join_1.na.fill(value = 0)
-
-df_join_1 = df_join_1.na.fill("")
-
-#----------------------Economy---------------------
-df_eco = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/economy.csv")
-
-#fill null with zero
-df_eco = df_eco.na.fill(0)
-
-#----------------------Join_2---------------------
-df_join_2 = df_join_1.join(df_eco, df_eco.location_key == df_join_1.location_key,'inner').drop(df_eco.location_key)
-df_join_2 = df_join_2.na.fill(value = 0)
-
-df_join_2 = df_join_2.na.fill("")
-
-
-#----------------------Health---------------------
-df_health = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/health.csv")
-
-# filling the null values in the life_expectancy column with the mean of it
-imputer = Imputer(inputCol='life_expectancy',outputCol="life_expectancy").setStrategy("mean")
-health_df = imputer.fit(df_health).transform(df_health)
-
-#----------------------Join_3---------------------
-df_join_3 = df_join_2.join(df_health, df_health.location_key == df_join_2.location_key,'inner').drop(df_health.location_key)
-df_join_3 = df_join_3.na.fill(value = 0)
-
-df_join_3 = df_join_3.na.fill("")
-
-#----------------------Epidemiology---------------------
-df_epidemiology = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/epidemiology.csv")
-
-df_epidemiology = df_epidemiology.withColumn('date',to_date(df_epidemiology['date'],format='yyyy-mm-dd'))
-
-df_epidemiology = df_epidemiology.na.fill(value=0)
-displayNullCount(df_join_3)
-
-
-#---------------------------------Opening government response dataset and cleaning it-------------------
-
-df_gr = spark.read.format('csv').option('header',True).option('inferSchema', True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/governmentResponse.csv")
-
-#removing the rows which have null values for all the columns
-df_gr = df_gr.na.drop(how = "all", thresh = None, subset= None )
-
-#replacing null values with 0 for columns having integer values
-df_gr = df_gr.na.fill(value = 0)
-
-#replacing null values with empty string "" for columns having string values
-df_gr = df_gr.na.fill("")
-
-#formatting date
-
-df_gr = df_gr.withColumn('date',to_date(df_gr['date'],'yyyy-mm-dd'))
-
-#---------------------------------Opening emergency decleration dataset and cleaning it----------------------
-
-df_ed = spark.read.format('csv').option('header',True).option('inferSchema', True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/emergencydec.csv")
-
-df_ed = df_ed.na.drop(how = "all", thresh = None, subset = None )
-
-df_ed = df_ed.na.fill(value = 0)
-
-df_ed = df_ed.na.fill("")
-
-#df_ed = df_ed.withColumn('date',to_date(df_ed['date'],format='yyyy-mm-dd'))
-df_ed = df_ed.withColumn('date',to_date(df_ed['date'],'yyyy-mm-dd'))
-
-#deleting empty columns
-df_ed = df_ed.drop('lawatlas_requirement_type_traveler_must_self_quarantine', 'lawatlas_requirement_type_traveler_must_inform_others_of_travel', 'lawatlas_requirement_type_checkpoints_must_be_established', 'lawatlas_requirement_type_travel_requirement_must_be_posted', 'lawatlas_business_type_non_essential_retail_businesses', 'lawatlas_business_type_all_non_essential_businesses')
-
-#-------------------------------Joining emergency declaration and government response datasets-----------------------------
-
-df_join = df_gr.join(df_ed, on = ['date', 'location_key'],how =  'leftouter')
-df_join = df_ed.na.drop(how = "all", thresh = None, subset = None )
-
-df_join = df_ed.na.fill(value = 0)
-
-df_join = df_ed.na.fill("")
-
 displayNullCount(df_join_1)
-displayNullCount(df_join_2)
-displayNullCount(df_join_3)
+# df_join_1 = df_join_1.na.fill(value = 0)
+
+# df_join_1 = df_join_1.na.fill("")
+
+# #----------------------Economy---------------------
+# df_eco = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/economy.csv")
+
+# #fill null with zero
+# df_eco = df_eco.na.fill(0)
+
+# #----------------------Join_2---------------------
+# df_join_2 = df_join_1.join(df_eco, df_eco.location_key == df_join_1.location_key,'inner').drop(df_eco.location_key)
+# df_join_2 = df_join_2.na.fill(value = 0)
+
+# df_join_2 = df_join_2.na.fill("")
+
+
+# #----------------------Health---------------------
+# df_health = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/health.csv")
+
+# # filling the null values in the life_expectancy column with the mean of it
+# imputer = Imputer(inputCol='life_expectancy',outputCol="life_expectancy").setStrategy("mean")
+# health_df = imputer.fit(df_health).transform(df_health)
+
+# #----------------------Join_3---------------------
+# df_join_3 = df_join_2.join(df_health, df_health.location_key == df_join_2.location_key,'inner').drop(df_health.location_key)
+# df_join_3 = df_join_3.na.fill(value = 0)
+
+# df_join_3 = df_join_3.na.fill("")
+
+# #----------------------Epidemiology---------------------
+# df_epidemiology = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/epidemiology.csv")
+
+# df_epidemiology = df_epidemiology.withColumn('date',to_date(df_epidemiology['date'],format='yyyy-mm-dd'))
+
+# df_epidemiology = df_epidemiology.na.fill(value=0)
+# displayNullCount(df_join_3)
+
+
+# #---------------------------------Opening government response dataset and cleaning it-------------------
+
+# df_gr = spark.read.format('csv').option('header',True).option('inferSchema', True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/governmentResponse.csv")
+
+# #removing the rows which have null values for all the columns
+# df_gr = df_gr.na.drop(how = "all", thresh = None, subset= None )
+
+# #replacing null values with 0 for columns having integer values
+# df_gr = df_gr.na.fill(value = 0)
+
+# #replacing null values with empty string "" for columns having string values
+# df_gr = df_gr.na.fill("")
+
+# #formatting date
+
+# df_gr = df_gr.withColumn('date',to_date(df_gr['date'],'yyyy-mm-dd'))
+
+# #---------------------------------Opening emergency decleration dataset and cleaning it----------------------
+
+# df_ed = spark.read.format('csv').option('header',True).option('inferSchema', True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/emergencydec.csv")
+
+# df_ed = df_ed.na.drop(how = "all", thresh = None, subset = None )
+
+# df_ed = df_ed.na.fill(value = 0)
+
+# df_ed = df_ed.na.fill("")
+
+# #df_ed = df_ed.withColumn('date',to_date(df_ed['date'],format='yyyy-mm-dd'))
+# df_ed = df_ed.withColumn('date',to_date(df_ed['date'],'yyyy-mm-dd'))
+
+# #deleting empty columns
+# df_ed = df_ed.drop('lawatlas_requirement_type_traveler_must_self_quarantine', 'lawatlas_requirement_type_traveler_must_inform_others_of_travel', 'lawatlas_requirement_type_checkpoints_must_be_established', 'lawatlas_requirement_type_travel_requirement_must_be_posted', 'lawatlas_business_type_non_essential_retail_businesses', 'lawatlas_business_type_all_non_essential_businesses')
+
+# #-------------------------------Joining emergency declaration and government response datasets-----------------------------
+
+# df_join_5 = df_gr.join(df_ed, on = ['date', 'location_key'],how =  'leftouter')
+# df_join_5 = df_ed.na.drop(how = "all", thresh = None, subset = None )
+
+# df_join_5 = df_ed.na.fill(value = 0)
+
+# df_join_5 = df_ed.na.fill("")
+
 
 
 
