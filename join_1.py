@@ -144,12 +144,12 @@ df_ed = df_ed.drop('lawatlas_requirement_type_traveler_must_self_quarantine', 'l
 
 #-------------------------------Joining emergency declaration and government response datasets-----------------------------
 
-df_join_5 = df_gr.join(df_ed, on = ['date', 'location_key'],how =  'leftouter')
+df_join_5 = df_gr.join(df_ed, on = ['date', 'location_key'],how =  'leftouter').drop(df_ed.date).drop(df_ed.location_key)
 df_join_5 = df_ed.na.drop(how = "all", thresh = None, subset = None )
-displayNullCount(df_join_5)
-# df_join_5 = df_ed.na.fill(value = 0)
+df_join_5 = df_ed.na.fill(value = 0)
+df_join_5 = df_ed.na.fill("")
 
-# df_join_5 = df_ed.na.fill("")
+df_join_5.printSchema()
 
 
 
