@@ -13,6 +13,8 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import count, when,col,expr, udf, avg,to_date
 from  pyspark.sql.types import IntegerType
 from pyspark.ml.feature import Imputer
+from pyspark.sql import Window
+import sys
 
 
 # -----------------------------FUNCTIONS-----------------------------------------------
@@ -104,16 +106,12 @@ spark.conf.set(
 #----------------------Epidemiology---------------------
 df_epidemiology = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/epidemiology.csv")
 
-df_epidemiology = df_epidemiology.drop('cumulative_tested','cumulative_confirmed','cumulative_deceased','cumulative_recovered')
-
 df_epidemiology = df_epidemiology.withColumn('date',to_date(df_epidemiology['date'],format='dd-mm-yyyy'))
 
+df_epidemiology.na.fill(value=0)
 df_epidemiology.printSchema()
 
-df_epid_pd = df_epidemiology.toPandas()
-df_epid_pd.interpolate(method="linear")
 
-displayNullCount(df_epid_pd)
 
 
 
