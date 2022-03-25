@@ -134,8 +134,8 @@ columns_not_to_cast = ["date", "location_key", "lawatlas_mitigation_policy"]
 df_ed = (
    df_ed
    .select(
-     *(c for c in df_ed.columns),
-     *(col(c).cast("float").alias(c) for c in columns_not_to_cast if c not in columns_not_to_cast)
+     *(c for c in columns_not_to_cast),
+     *(col(c).cast("float").alias(c) for c in df_ed.columns if c not in columns_not_to_cast)
    )
 )
 
