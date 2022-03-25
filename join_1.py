@@ -209,8 +209,8 @@ df_vaccination = df_vaccination.select("date","location_key","new_persons_vaccin
 
 df_vaccination = df_vaccination.na.drop(subset=["new_persons_vaccinated","cumulative_persons_vaccinated","new_persons_fully_vaccinated","cumulative_persons_fully_vaccinated","new_vaccine_doses_administered","cumulative_vaccine_doses_administered"] ,how="all")
 
-df_vaccination = df_vaccination.withColumn("new_colm", last('cumulative_persons_vaccinated', True).over(Window.partitionBy('location_key').rowsBetween(-sys.maxsize, 0))).show()
-df_vaccination = df_vaccination.withColumn("new_colm1",last('cumulative_persons_fully_vaccinated', True).over(Window.partitionBy('location_key').rowsBetween(-sys.maxsize, 0))).show()
-df_vaccination = df_vaccination.withColumn("new_colm2",last('cumulative_vaccine_doses_administered', True).over(Window.partitionBy('location_key').rowsBetween(-sys.maxsize, 0))).show()
+df_vaccination = df_vaccination.withColumn("cumulative_persons_vaccinated", last('cumulative_persons_vaccinated', True).over(Window.partitionBy('location_key').rowsBetween(-sys.maxsize, 0)))
+df_vaccination = df_vaccination.withColumn("cumulative_persons_fully_vaccinated",last('cumulative_persons_fully_vaccinated', True).over(Window.partitionBy('location_key').rowsBetween(-sys.maxsize, 0)))
+df_vaccination = df_vaccination.withColumn("cumulative_vaccine_doses_administered",last('cumulative_vaccine_doses_administered', True).over(Window.partitionBy('location_key').rowsBetween(-sys.maxsize, 0)))
 
 df_vaccination.show()
