@@ -235,7 +235,7 @@ df_com_avi = df_com_avi.withColumn('Date',to_date(df_com_avi['Date'],format='mm-
 # Cleaning week num column as it contains improper week format
 df_com_avi = df_com_avi.withColumn('Week Num', df_com_avi['Week Num'].cast(IntegerType()))
 df_com_avi = df_com_avi.na.fill(value=0)
-df_com_avi = df_com_avi.select(date_format('timestamp','yyyy-mm-dd').alias('month')).groupby('month')
+df_com_avi = df_com_avi.select(date_format('date','yyyy-mm-dd').alias('month')).groupby('month')
 df_com_avi.show()
 df_com_avi.printSchema()
 
