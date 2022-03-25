@@ -195,6 +195,6 @@ spark.conf.set(
 
 #--------------------------------Commerical Aviation-------------------------------------------------------------
 df_com_avi = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/Commercial_Aviation_Departures.csv")
-df_com_avi = df_com_avi.withColumn('Date', regexp_replace('Date', '/', '-')).show(truncate=False)
+df_com_avi = df_com_avi.withColumn('Date', regexp_replace('Date', '/', '-'))
 df_com_avi = df_com_avi.withColumn('Date',to_date(df_com_avi['Date']),'mm-dd-yyy')
 df_com_avi.show()
