@@ -197,4 +197,4 @@ df_join_n = df_epidemiology.join(df_join_7, on = ['Date', 'location_key'],how = 
 #-----------------------------Joining Join_n & Join Join_6------------------------------------------------------
 
 df_join_8 = df_join_n.join(df_join_3, on = ['location_key'],how =  'leftouter').drop(df_join_3.location_key)
-df_join_n.printSchema()
+df_join_8.printSchema()
