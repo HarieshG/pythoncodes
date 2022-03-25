@@ -8,7 +8,7 @@ import dis
 from re import S
 import pyspark
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import count, when,col,expr, udf, avg,to_date,regexp_replace
+from pyspark.sql.functions import count, when,col,expr, udf, avg,to_date,regexp_replace,last
 from  pyspark.sql.types import IntegerType, DecimalType
 from pyspark.ml.feature import Imputer
 from pyspark.sql import Window
@@ -208,5 +208,9 @@ df_vaccination = spark.read.format('csv').option('header',True).option('inferSch
 df_vaccination = df_vaccination.select("date","location_key","new_persons_vaccinated","cumulative_persons_vaccinated","new_persons_fully_vaccinated","cumulative_persons_fully_vaccinated","new_vaccine_doses_administered","cumulative_vaccine_doses_administered")
 
 df_vaccination = df_vaccination.na.drop(subset=["new_persons_vaccinated","cumulative_persons_vaccinated","new_persons_fully_vaccinated","cumulative_persons_fully_vaccinated","new_vaccine_doses_administered","cumulative_vaccine_doses_administered"] ,how="all")
+
+df_vaccination.withColumn("new_colm", last('cumulative_persons_vaccinated', True).over(Window.partitionBy('location_key').rowsBetween(-sys.maxsize, 0))).show()
+df_vaccination.withColumn("new_colm1",last('cumulative_persons_fully_vaccinated', True).over(Window.partitionBy('location_key').rowsBetween(-sys.maxsize, 0))).show()
+df_vaccination.withColumn("new_colm2",last('cumulative_vaccine_doses_administered', True).over(Window.partitionBy('location_key').rowsBetween(-sys.maxsize, 0))).show()
 
 df_vaccination.show()
