@@ -213,4 +213,6 @@ df_vaccination = df_vaccination.withColumn("cumulative_persons_vaccinated", last
 df_vaccination = df_vaccination.withColumn("cumulative_persons_fully_vaccinated",last('cumulative_persons_fully_vaccinated', True).over(Window.partitionBy('location_key').rowsBetween(-sys.maxsize, 0)))
 df_vaccination = df_vaccination.withColumn("cumulative_vaccine_doses_administered",last('cumulative_vaccine_doses_administered', True).over(Window.partitionBy('location_key').rowsBetween(-sys.maxsize, 0)))
 
+df_vaccination = df_vaccination.na.fill(value=0)
+
 df_vaccination.show()
