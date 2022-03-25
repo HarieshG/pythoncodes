@@ -222,7 +222,7 @@ df_join_9 = df_join_8.join(df_vaccination, on = ['Date', 'location_key'],how =  
 df_join_3.printSchema()
 #------------------------------Joining Join_3 & Join_9----------------------------------------------------
 
-df_join_10 = df_join_9.join(df_join_3, on = ['Date', 'location_key'],how =  'leftouter').drop(df_join_3.Date).drop(df_join_3.location_key)
+df_join_10 = df_join_9.join(df_join_3, on = ['location_key'],how =  'leftouter').drop(df_join_3.location_key)
 df_join_10.printSchema()
 
 #--------------------------------Commerical Aviation-------------------------------------------------------------
