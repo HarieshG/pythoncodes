@@ -258,7 +258,7 @@ spark.conf.set(
 
 #----------------------------------Monthly Transportation---------------------------------------
 #reading monthly transportation statistics data
-df_mt = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/Monthly_Transportation_Statistics.csv.csv")
+df_mt = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/Monthly_Transportation_Statistics.csv")
 
 #removing "." from column names (presence of "." in the column names throws error)
 new_col = []
