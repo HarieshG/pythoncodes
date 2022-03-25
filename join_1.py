@@ -158,10 +158,10 @@ spark.conf.set(
 # df_join_5 = df_join_5.na.fill("")
 
 # #---------------------------------Cleaning Index dataset---------------------------------------------------------------------
-df_index = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/index.csv")
-df_index = df_index.select("location_key", "country_code","country_name", "subregion1_code", "subregion1_name")
-df_index = df_index.na.fill("")
-df_index.show()
+# df_index = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/index.csv")
+# df_index = df_index.select("location_key", "country_code","country_name", "subregion1_code", "subregion1_name")
+# df_index = df_index.na.fill("")
+# df_index.show()
 # #---------------------------------Opening  weather dataset and cleaning it----------------------
 
 # df_weather = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/weather.csv")
@@ -194,9 +194,17 @@ df_index.show()
 # df_join_n = df_epidemiology.join(df_join_7, on = ['Date', 'location_key'],how =  'leftouter').drop(df_join_7.Date).drop(df_join_7.location_key)
 
 #--------------------------------Commerical Aviation-------------------------------------------------------------
-df_com_avi = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/Commercial_Aviation_Departures.csv")
-df_com_avi = df_com_avi.withColumn('Date', regexp_replace('Date', '/', '-'))
-df_com_avi = df_com_avi.withColumn('Date',to_date(df_com_avi['Date'],format='mm-dd-yyyy'))
-df_com_avi = df_com_avi.withColumn('Week Num', df_com_avi['Week Num'].cast(IntegerType()))
-df_com_avi = df_com_avi.na.fill(value=0)
-df_com_avi.show()
+# df_com_avi = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/Commercial_Aviation_Departures.csv")
+# df_com_avi = df_com_avi.withColumn('Date', regexp_replace('Date', '/', '-'))
+# df_com_avi = df_com_avi.withColumn('Date',to_date(df_com_avi['Date'],format='mm-dd-yyyy'))
+# df_com_avi = df_com_avi.withColumn('Week Num', df_com_avi['Week Num'].cast(IntegerType()))
+# df_com_avi = df_com_avi.na.fill(value=0)
+# df_com_avi.show()
+
+#-----------------------------------Vaccination------------------------------------------------------------------
+
+df_vaccination = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/vaccinations.csv")
+
+df_vaccination = df_vaccination.na.drop(subset=["new_persons_vaccinated","cumulative_persons_vaccinated","new_persons_fully_vaccinated","cumulative_persons_fully_vaccinated","new_vaccine_doses_administered","cumulative_vaccine_doses_administered"] ,how="all")
+
+df_vaccination.show()
