@@ -9,7 +9,7 @@ import pyspark
 import pandas
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import count, when,col,expr, udf, avg,to_date
-from  pyspark.sql.types import IntegerType
+from  pyspark.sql.types import IntegerType, DecimalType
 from pyspark.ml.feature import Imputer
 from pyspark.sql import Window
 import sys
@@ -130,6 +130,15 @@ df_ed = spark.read.format('csv').option('header',True).option('inferSchema', Tru
 
 df_ed = df_ed.na.drop(how = "all", thresh = None, subset = None )
 
+columns_not_to_cast = ["date", "location_key", "lawatlas_mitigation_policy"]
+df_ed = (
+   df_ed
+   .select(
+     *(c for c in df_ed.columns),
+     *(col(c).cast("float").alias(c) for c in columns_not_to_cast if c not in columns_not_to_cast)
+   )
+)
+
 df_ed = df_ed.na.fill(value = 0.5)
 
 df_ed = df_ed.na.fill("")
@@ -139,7 +148,7 @@ df_ed = df_ed.withColumn('date',to_date(df_ed['date'],'yyyy-mm-dd'))
 
 #deleting empty columns
 df_ed = df_ed.drop('lawatlas_requirement_type_traveler_must_self_quarantine', 'lawatlas_requirement_type_traveler_must_inform_others_of_travel', 'lawatlas_requirement_type_checkpoints_must_be_established', 'lawatlas_requirement_type_travel_requirement_must_be_posted', 'lawatlas_business_type_non_essential_retail_businesses', 'lawatlas_business_type_all_non_essential_businesses')
-
+df_ed.printSchema()
 df_ed.show()
 # #-------------------------------Joining emergency declaration and government response datasets-----------------------------
 
