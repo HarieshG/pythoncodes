@@ -1,12 +1,12 @@
-#-----------------------------Tailwyndz LLC----------------------------------------------
-#-----------------------------Created on 23rd March 2022---------------------------------
-#-----------------------------Data Cleaning & Joining of Covid datasets------------------
+# Created on 23/03/2021
+# @author: tailwyndz LLC
+# Confidential and Proprietary. Copyright (c) by Tailwyndz LLC. All Rights Reserved
+# Packages: pyspark, pyspark sql function, pyspark ML features
 
 
 import dis
 from re import S
 import pyspark
-import pandas
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import count, when,col,expr, udf, avg,to_date,regexp_replace
 from  pyspark.sql.types import IntegerType, DecimalType
@@ -197,5 +197,6 @@ df_index.show()
 df_com_avi = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/Commercial_Aviation_Departures.csv")
 df_com_avi = df_com_avi.withColumn('Date', regexp_replace('Date', '/', '-'))
 df_com_avi = df_com_avi.withColumn('Date',to_date(df_com_avi['Date'],format='mm-dd-yyyy'))
+df_com_avi = df_com_avi.withColumn('Week Num', regexp_replace('Week Num', '.[0-9]+', ''))
 df_com_avi = df_com_avi.na.fill(value=0)
 displayNullCount(df_com_avi)
