@@ -217,7 +217,14 @@ df_vaccination = df_vaccination.withColumn('Date',to_date(df_vaccination['Date']
 #------------------------------Joining Join_8 & Vaccination----------------------------------------------------
 
 df_join_9 = df_join_8.join(df_vaccination, on = ['Date', 'location_key'],how =  'leftouter').drop(df_vaccination.Date).drop(df_vaccination.location_key)
-df_join_9.printSchema()
+
+
+df_join_3.printSchema()
+#------------------------------Joining Join_3 & Join_9----------------------------------------------------
+
+df_join_10 = df_join_9.join(df_join_3, on = ['Date', 'location_key'],how =  'leftouter').drop(df_join_3.Date).drop(df_join_3.location_key)
+df_join_10.printSchema()
+
 #--------------------------------Commerical Aviation-------------------------------------------------------------
 # # Reading vaccination data
 # df_com_avi = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/Commercial_Aviation_Departures.csv")
