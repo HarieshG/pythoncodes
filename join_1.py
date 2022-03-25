@@ -149,8 +149,7 @@ df_ed = df_ed.withColumn('date',to_date(df_ed['date'],'yyyy-mm-dd'))
 
 #deleting empty columns
 df_ed = df_ed.drop('lawatlas_requirement_type_traveler_must_self_quarantine', 'lawatlas_requirement_type_traveler_must_inform_others_of_travel', 'lawatlas_requirement_type_checkpoints_must_be_established', 'lawatlas_requirement_type_travel_requirement_must_be_posted', 'lawatlas_business_type_non_essential_retail_businesses', 'lawatlas_business_type_all_non_essential_businesses')
-df_ed.printSchema()
-df_ed.show()
+
 #-------------------------------Joining emergency declaration and government response datasets-----------------------------
 
 df_join_5 = df_gr.join(df_ed, on = ['date', 'location_key'],how =  'leftouter').drop(df_ed.date).drop(df_ed.location_key)
@@ -164,10 +163,12 @@ df_index = df_index.na.fill("")
 
 
 #-------------------------------------Vaccination------------------------------------------------
-df_vc = spark.read.format('csv').option('header',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/vaccination.csv")
-df_vc.na.drop(how = "all" )
-df_vc.na.fill(0)
-df_vc.show()
+
+df_vac = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/vaccinations.csv")
+df_vac = df_vac.drop(['new_persons_vaccinated_pfizer','cumulative_persons_vaccinated_pfizer','new_persons_fully_vaccinated_pfizer','cumulative_persons_fully_vaccinated_pfizer','new_vaccine_doses_administered_pfizer','cumulative_vaccine_doses_administered_pfizer','new_persons_vaccinated_moderna','cumulative_persons_vaccinated_moderna','new_persons_fully_vaccinated_moderna','cumulative_persons_fully_vaccinated_moderna','new_vaccine_doses_administered_moderna','cumulative_vaccine_doses_administered_moderna','new_persons_vaccinated_janssen','cumulative_persons_vaccinated_janssen','new_persons_fully_vaccinated_janssen','cumulative_persons_fully_vaccinated_janssen','new_vaccine_doses_administered_janssen','cumulative_vaccine_doses_administered_janssen','new_persons_vaccinated_sinovac','total_persons_vaccinated_sinovac','new_persons_fully_vaccinated_sinovac','total_persons_fully_vaccinated_sinovac','new_vaccine_doses_administered_sinovac','total_vaccine_doses_administered_sinovac'], axis=1)
+
+#Fill null values with zero
+df_vac = df_vac.na.fill(0, subset=['new_persons_vaccinated','cumulative_persons_vaccinated','new_persons_fully_vaccinated','cumulative_persons_fully_vaccinated','new_vaccine_doses_administered','cumulative_vaccine_doses_administered'],axis=1)
 
 
 #---------------------------------Opening  weather dataset and cleaning it----------------------
@@ -201,4 +202,8 @@ df_join_7 = df_join_6.join(df_join_5, on = ['Date', 'location_key'],how =  'left
 
 df_join_n = df_epidemiology.join(df_join_7, on = ['Date', 'location_key'],how =  'leftouter').drop(df_join_7.Date).drop(df_join_7.location_key)
 
+
+#-----------------------------Joining Join_n & Join Join_6------------------------------------------------------
+
+df_join_8 = df_join_n.join(df_join_3, on = ['location_key'],how =  'leftouter').drop(df_join_3.location_key)
 df_join_n.printSchema()
