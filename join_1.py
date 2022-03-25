@@ -215,4 +215,6 @@ df_vaccination = df_vaccination.withColumn("cumulative_vaccine_doses_administere
 
 df_vaccination = df_vaccination.na.fill(value=0)
 
-df_vaccination.show()
+df_vaccination = df_vaccination.withColumn('Date',to_date(df_vaccination['Date'],format='yyyy-mm-dd'))
+
+df_vaccination.printSchema()
