@@ -262,7 +262,7 @@ df_mon_avi = df_mon_avi.withColumn('Date', to_date(df_mon_avi['Date'], format='M
 # selects four major needed data columns from the data frame
 df_mon_avi = df_mon_avi.select("Date", "DOMESTIC", "INTERNATIONAL", "TOTAL")
 
-df_com_avi.groupBy('Date').count()
+df_com_avi.groupBy('Date').count().show()
 
 #----------------------------------Monthly Transportation---------------------------------------
 #reading monthly transportation statistics data
@@ -289,7 +289,7 @@ df_mt = df_mt.withColumn('Date', regexp_replace('Date',  ' 12:00:...', ''))
 df_mt = df_mt.withColumn('Date', regexp_replace('Date',  'AM', ''))
 df_mt = df_mt.withColumn('Date', to_date(df_mt['Date'],'dd-mm-yyyy'))
 
-df_mt.groupBy('Date').count()
+df_mt.groupBy('Date').count().show()
 
 #--------------------------------------------Join Monthly aviation & Monthly Transportation---------------------------
 df_ma_mt = df_mon_avi.join(df_mt,on=['Date'],how='inner').drop(df_mt.Date)
