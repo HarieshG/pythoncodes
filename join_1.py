@@ -288,13 +288,13 @@ df_mt = df_mt.na.fill(value = 0)
 df_mt = df_mt.withColumn('Date', regexp_replace('Date', '/', '-'))
 df_mt = df_mt.withColumn('Date', regexp_replace('Date',  ' 12:00:...', ''))
 df_mt = df_mt.withColumn('Date', regexp_replace('Date',  'AM', ''))
-df_mt = df_mt.withColumn('Date', to_date(df_mt['Date'],'dd-mm-yyyy'))
+# df_mt = df_mt.withColumn('Date', to_date(df_mt['Date'],'dd-mm-yyyy'))
 # UDF to convert string to date
 func =  udf (lambda x: datetime.strptime(x, '%d-%m-%Y'), DateType())
 
 df_mt = df_mt.withColumn('new_col', date_format(func(col('Date')), 'MM-dd-yyy'))
 
-df_mt.groupBy('Date').count().show()
+df_mt.groupBy('new_col').count().show()
 
 #--------------------------------------------Join Monthly aviation & Monthly Transportation---------------------------
 df_ma_mt = df_mon_avi.join(df_mt,on=['Date'],how='inner').drop(df_mt.Date)
