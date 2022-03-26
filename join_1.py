@@ -301,6 +301,6 @@ df_ma_mt = df_mon_avi.join(df_mt,on=['Date'],how='inner').drop(df_mt.Date)
 
 
 #---------------------------------------------Join_MA_MT & Commercial aviation----------------------------------------
-df_join_12 = df_ma_mt.join(df_mt,on=['Date'],how='inner').drop(df_mt.Date)
+df_join_12 = df_ma_mt.join(df_com_avi,on=['Date'],how='inner').drop(df_com_avi.Date)
 df_join_12.show()
 df_join_12.printSchema()
