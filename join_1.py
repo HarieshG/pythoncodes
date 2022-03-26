@@ -8,7 +8,7 @@ import dis
 from re import S
 import pyspark
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import count, when,col,expr, udf, avg,to_date,regexp_replace,last,lpad,concat_ws,date_format
+from pyspark.sql.functions import count, when,col,expr, udf, avg,to_date,regexp_replace,last,lpad,concat_ws,date_format,month
 from  pyspark.sql.types import IntegerType, DecimalType
 from pyspark.ml.feature import Imputer
 from pyspark.sql import Window
@@ -232,7 +232,7 @@ df_com_avi = spark.read.format('csv').option('header',True).option('inferSchema'
 df_com_avi = df_com_avi.withColumn('Date', regexp_replace('Date', '/', '-'))
 df_com_avi.show(100)
 df_com_avi = df_com_avi.withColumn('Date',to_date(df_com_avi['Date'],format='MM-dd-yyyy'))
-
+df_com_avi = df_com_avi.groupBy(month('Date')).sum()
 # Cleaning week num column as it contains improper week format
 df_com_avi = df_com_avi.withColumn('Week Num', df_com_avi['Week Num'].cast(IntegerType()))
 df_com_avi = df_com_avi.na.fill(value=0)
