@@ -242,7 +242,7 @@ df_com_avi = df_com_avi.select(concat_ws('', df_com_avi['Month'], df_com_avi['Ye
 
 
  # convers the date column's type from string to date
-#  df_mon_avi = df_mon_avi.withColumn('Date', to_date(df_mon_avi['Date'], format='MMyyyy'))
+df_com_avi = df_com_avi.withColumn('Date', to_date(df_com_avi['Date'], format='MMyyyy'))
 
 df_com_avi = df_com_avi.na.fill(value=0)
 df_com_avi.show(100)
