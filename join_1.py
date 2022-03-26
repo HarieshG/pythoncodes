@@ -230,14 +230,13 @@ df_com_avi = spark.read.format('csv').option('header',True).option('inferSchema'
 
 # Change date format from 02/12/2022 to 02-12-2022
 df_com_avi = df_com_avi.withColumn('Date', regexp_replace('Date', '/', '-'))
-df_com_avi.withColumn('newcol', date_format(col('Date'), '1/M/yyyy')).groupBy('newcol').agg(sum(col('newcol'))).show()
 
-# df_com_avi = df_com_avi.withColumn('Date',to_date(df_com_avi['Date'],format='mm-dd-yyyy'))
+df_com_avi = df_com_avi.withColumn('Date',to_date(df_com_avi['Date'],format='mm-dd-yyyy'))
 
 # Cleaning week num column as it contains improper week format
 df_com_avi = df_com_avi.withColumn('Week Num', df_com_avi['Week Num'].cast(IntegerType()))
 df_com_avi = df_com_avi.na.fill(value=0)
-# df_com_avi.show()
+df_com_avi.show()
 # df_com_avi.printSchema()
 
 # #----------------------------Monthly Aviation--------------------------------------------------------------------
