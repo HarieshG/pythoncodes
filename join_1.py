@@ -292,9 +292,9 @@ df_mt = df_mt.withColumn('Date', regexp_replace('Date',  'AM', ''))
 # UDF to convert string to date
 func =  udf (lambda x: datetime.strptime(x, '%d-%m-%Y'), DateType())
 
-df_mt = df_mt.withColumn('new_col', date_format(func(col('Date')), 'MM-dd-yyy'))
+df_mt = df_mt.withColumn('Date', date_format(func(col('Date')), 'yyyy-mm-dd'))
 
-df_mt.groupBy('new_col').count().show()
+df_mt.groupBy('Date').count().show()
 
 #--------------------------------------------Join Monthly aviation & Monthly Transportation---------------------------
 df_ma_mt = df_mon_avi.join(df_mt,on=['Date'],how='inner').drop(df_mt.Date)
