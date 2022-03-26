@@ -7,9 +7,10 @@
 import dis
 from re import S
 import pyspark
+from datetime import datetime
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import count, when,col,expr, udf, avg,to_date,regexp_replace,last,lpad,concat_ws,date_format,year,month
-from  pyspark.sql.types import IntegerType, DecimalType
+from  pyspark.sql.types import IntegerType, DecimalType, DateType
 from pyspark.ml.feature import Imputer
 from pyspark.sql import Window
 import sys
@@ -288,7 +289,10 @@ df_mt = df_mt.withColumn('Date', regexp_replace('Date', '/', '-'))
 df_mt = df_mt.withColumn('Date', regexp_replace('Date',  ' 12:00:...', ''))
 df_mt = df_mt.withColumn('Date', regexp_replace('Date',  'AM', ''))
 df_mt = df_mt.withColumn('Date', to_date(df_mt['Date'],'dd-mm-yyyy'))
-df_mt = df_mt.withColumn('Date', date_format('Date','yyyy-MM-dd'))
+# UDF to convert string to date
+func =  udf (lambda x: datetime.strptime(x, '%d-%m-%Y'), DateType())
+
+df_mt = df_mt.withColumn('new_col', date_format(func(col('Date')), 'MM-dd-yyy'))
 
 df_mt.groupBy('Date').count().show()
 
