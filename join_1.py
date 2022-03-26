@@ -295,11 +295,12 @@ func =  udf (lambda x: datetime.strptime(x, '%m-%d-%Y'), DateType())
 
 df_mt = df_mt.withColumn('Date', date_format(func(col('Date')), 'yyyy-MM-dd'))
 
-df_mt.show()
 
 #--------------------------------------------Join Monthly aviation & Monthly Transportation---------------------------
 df_ma_mt = df_mon_avi.join(df_mt,on=['Date'],how='inner').drop(df_mt.Date)
-df_ma_mt.show()
+
 
 #---------------------------------------------Join_MA_MT & Commercial aviation----------------------------------------
-# df_join_12 = df_ma_mt.join
+df_join_12 = df_ma_mt.join(df_mt,on=['Date'],how='inner').drop(df_mt.Date)
+df_join_12.show()
+df_join_12.printSchema()
