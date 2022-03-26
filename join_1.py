@@ -226,81 +226,84 @@ df_join_10 = df_join_9.join(df_join_3, on = ['location_key'],how =  'leftouter')
 df_join_11 = df_join_10.join(df_index, on = ['location_key'],how =  'leftouter').drop(df_index.location_key)
 df_join_11.printSchema()
 #--------------------------------Commerical Aviation-------------------------------------------------------------
-# Reading vaccination data
-# df_com_avi = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/Commercial_Aviation_Departures.csv")
+#Reading vaccination data
+df_com_avi = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/Commercial_Aviation_Departures.csv")
 
-# # Change date format from 02/12/2022 to 02-12-2022
-# df_com_avi = df_com_avi.withColumn('Date', regexp_replace('Date', '/', '-'))
-# df_com_avi = df_com_avi.withColumn('Date',to_date(df_com_avi['Date'],format='MM-dd-yyyy'))
-# df_com_avi = df_com_avi.select('Mode', 'Indicator' ,'Date','Lowest','Current','Last Year')
-# df_com_avi = df_com_avi.groupBy('Mode','Indicator',month('Date'), year('Date')).sum()
-# df_com_avi = df_com_avi.withColumnRenamed('month(Date)','Month').withColumnRenamed('Year(Date)','Year').withColumnRenamed('sum(Lowest)','Lowest').withColumnRenamed('sum(Current)','Current').withColumnRenamed('sum(Last Year)', 'LastYear')
+# Change date format from 02/12/2022 to 02-12-2022
+df_com_avi = df_com_avi.withColumn('Date', regexp_replace('Date', '/', '-'))
+df_com_avi = df_com_avi.withColumn('Date',to_date(df_com_avi['Date'],format='MM-dd-yyyy'))
+df_com_avi = df_com_avi.select('Mode', 'Indicator' ,'Date','Lowest','Current','Last Year')
+df_com_avi = df_com_avi.groupBy('Mode','Indicator',month('Date'), year('Date')).sum()
+df_com_avi = df_com_avi.withColumnRenamed('month(Date)','Month').withColumnRenamed('Year(Date)','Year').withColumnRenamed('sum(Lowest)','Lowest').withColumnRenamed('sum(Current)','Current').withColumnRenamed('sum(Last Year)', 'LastYear')
 
-# df_com_avi = df_com_avi.select((lpad(df_com_avi.Month, 2, '0').alias('Month')), 'YEAR','MODE','Indicator','Lowest','Current','LastYear')
+df_com_avi = df_com_avi.select((lpad(df_com_avi.Month, 2, '0').alias('Month')), 'YEAR','MODE','Indicator','Lowest','Current','LastYear')
 
-#  # concats the month and year to single date column
-# df_com_avi = df_com_avi.select(concat_ws('', df_com_avi['Month'], df_com_avi['Year']).alias('Date'), df_com_avi["*"])
-
-
-#  # convers the date column's type from string to date
-# df_com_avi = df_com_avi.withColumn('Date', to_date(df_com_avi['Date'], format='MMyyyy'))
-
-# df_com_avi = df_com_avi.drop('Month','Year')
-# df_com_avi = df_com_avi.na.fill(value=0)
+ # concats the month and year to single date column
+df_com_avi = df_com_avi.select(concat_ws('', df_com_avi['Month'], df_com_avi['Year']).alias('Date'), df_com_avi["*"])
 
 
-# #----------------------------Monthly Aviation--------------------------------------------------------------------
-# df_mon_avi = spark.read.format('csv').option('header', True).option('inferSchema', True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/monthly_aviation.csv")
-# # converts the month from single digit to double digit
-# df_mon_avi = df_mon_avi.select((lpad(df_mon_avi.Month, 2, '0').alias('Month')), "Year", "DOMESTIC", "INTERNATIONAL", "TOTAL")
+ # convers the date column's type from string to date
+df_com_avi = df_com_avi.withColumn('Date', to_date(df_com_avi['Date'], format='MMyyyy'))
 
-# # concats the month and year to single date column
-# df_mon_avi = df_mon_avi.select(concat_ws('', df_mon_avi.Month, df_mon_avi.Year).alias('Date'), df_mon_avi["*"])
-
-# # convers the date column's type from string to date
-# df_mon_avi = df_mon_avi.withColumn('Date', to_date(df_mon_avi['Date'], format='MMyyyy'))
-
-# # selects four major needed data columns from the data frame
-# df_mon_avi = df_mon_avi.select("Date", "DOMESTIC", "INTERNATIONAL", "TOTAL")
+df_com_avi = df_com_avi.drop('Month','Year')
+df_com_avi = df_com_avi.na.fill(value=0)
 
 
+#----------------------------Monthly Aviation--------------------------------------------------------------------
+df_mon_avi = spark.read.format('csv').option('header', True).option('inferSchema', True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/monthly_aviation.csv")
+# converts the month from single digit to double digit
+df_mon_avi = df_mon_avi.select((lpad(df_mon_avi.Month, 2, '0').alias('Month')), "Year", "DOMESTIC", "INTERNATIONAL", "TOTAL")
 
-# #----------------------------------Monthly Transportation---------------------------------------
-# #reading monthly transportation statistics data
-# df_mt = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/Monthly_Transportation_Statistics.csv")
+# concats the month and year to single date column
+df_mon_avi = df_mon_avi.select(concat_ws('', df_mon_avi.Month, df_mon_avi.Year).alias('Date'), df_mon_avi["*"])
 
-# #removing "." from column names (presence of "." in the column names throws error)
-# new_col = []
-# for c in df_mt.columns:
-#         a = c.replace(".","")
-#         a = a.replace("(","")
-#         a = a.replace(")","")
-#         new_col.append(a)
+# convers the date column's type from string to date
+df_mon_avi = df_mon_avi.withColumn('Date', to_date(df_mon_avi['Date'], format='MMyyyy'))
 
-# df_mt = df_mt.toDF(*new_col)
-
-# #dropping unnecessary column
-# df_mt = df_mt.drop('Index')
-
-# #changing date format 
-# df_mt = df_mt.na.drop(how = "all", thresh = None, subset = None )
-# df_mt = df_mt.na.fill(value = 0)
-# df_mt = df_mt.withColumn('Date', regexp_replace('Date', '/', '-'))
-# df_mt = df_mt.withColumn('Date', regexp_replace('Date',  ' 12:00:...', ''))
-# df_mt = df_mt.withColumn('Date', regexp_replace('Date',  'AM', ''))
-# # df_mt = df_mt.withColumn('Date', to_date(df_mt['Date'],'dd-mm-yyyy'))
-# # UDF to convert string to date
-
-# func =  udf (lambda x: datetime.strptime(x, '%m-%d-%Y'), DateType())
-
-# df_mt = df_mt.withColumn('Date', date_format(func(col('Date')), 'yyyy-MM-dd'))
+# selects four major needed data columns from the data frame
+df_mon_avi = df_mon_avi.select("Date", "DOMESTIC", "INTERNATIONAL", "TOTAL")
 
 
-# #--------------------------------------------Join Monthly aviation & Monthly Transportation---------------------------
-# df_ma_mt = df_mon_avi.join(df_mt,on=['Date'],how='inner').drop(df_mt.Date)
+
+#----------------------------------Monthly Transportation---------------------------------------
+#reading monthly transportation statistics data
+df_mt = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/Monthly_Transportation_Statistics.csv")
+
+#removing "." from column names (presence of "." in the column names throws error)
+new_col = []
+for c in df_mt.columns:
+        a = c.replace(".","")
+        a = a.replace("(","")
+        a = a.replace(")","")
+        new_col.append(a)
+
+df_mt = df_mt.toDF(*new_col)
+
+#dropping unnecessary column
+df_mt = df_mt.drop('Index')
+
+#changing date format 
+df_mt = df_mt.na.drop(how = "all", thresh = None, subset = None )
+df_mt = df_mt.na.fill(value = 0)
+df_mt = df_mt.withColumn('Date', regexp_replace('Date', '/', '-'))
+df_mt = df_mt.withColumn('Date', regexp_replace('Date',  ' 12:00:...', ''))
+df_mt = df_mt.withColumn('Date', regexp_replace('Date',  'AM', ''))
+# df_mt = df_mt.withColumn('Date', to_date(df_mt['Date'],'dd-mm-yyyy'))
+# UDF to convert string to date
+
+func =  udf (lambda x: datetime.strptime(x, '%m-%d-%Y'), DateType())
+
+df_mt = df_mt.withColumn('Date', date_format(func(col('Date')), 'yyyy-MM-dd'))
 
 
-# #---------------------------------------------Join_MA_MT & Commercial aviation----------------------------------------
-# df_join_12 = df_ma_mt.join(df_com_avi,on=['Date'],how='inner').drop(df_com_avi.Date)
-# df_join_12.show()
-# df_join_12.printSchema()
+#--------------------------------------------Join Monthly aviation & Monthly Transportation---------------------------
+df_ma_mt = df_mon_avi.join(df_mt,on=['Date'],how='inner').drop(df_mt.Date)
+
+
+#---------------------------------------------Join_MA_MT & Commercial aviation----------------------------------------
+df_join_12 = df_ma_mt.join(df_com_avi,on=['Date'],how='inner').drop(df_com_avi.Date)
+
+#---------------------------------------------Final JOIN----------------------------------------
+df_final = df_join_11.join(df_join_12,on=['Date'],how='leftouter').drop(df_join_12.Date)
+df_final.show()
+df_final.printSchema()
