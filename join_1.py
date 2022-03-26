@@ -288,9 +288,9 @@ df_mt = df_mt.na.fill(value = 0)
 df_mt = df_mt.withColumn('Date', regexp_replace('Date', '/', '-'))
 df_mt = df_mt.withColumn('Date', regexp_replace('Date',  ' 12:00:...', ''))
 df_mt = df_mt.withColumn('Date', regexp_replace('Date',  'AM', ''))
-# df_mt = df_mt.withColumn('Date', to_date(df_mt['Date'],'dd-mm-yyyy'))
+df_mt = df_mt.withColumn('Date', to_date(df_mt['Date'],'dd-mm-yyyy'))
 # UDF to convert string to date
-func =  udf (lambda x: datetime.strptime(x, '%d-%m-%Y'), DateType())
+func =  udf (lambda x: datetime.strptime(x, '%Y-%m-%d'), DateType())
 
 df_mt = df_mt.withColumn('Date', date_format(func(col('Date')), 'yyyy-MM-dd'))
 
