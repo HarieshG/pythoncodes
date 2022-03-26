@@ -233,7 +233,7 @@ df_com_avi = df_com_avi.withColumn('Date', regexp_replace('Date', '/', '-'))
 df_com_avi = df_com_avi.withColumn('Date',to_date(df_com_avi['Date'],format='MM-dd-yyyy'))
 df_com_avi =df_com_avi.select('Mode', 'Indicator' ,'Date','Lowest','Current','Last Year')
 df_com_avi = df_com_avi.groupBy('Mode','Indicator',month('Date'), year('Date')).sum()
-df_com_avi = df_com_avi.withColumnRenamed('month(Date)','Month').withColumnRenamed('month(Year)','Year').withColumnRenamed('sum(Lowest)','Lowest')
+df_com_avi = df_com_avi.withColumnRenamed('month(Date)','Month').withColumnRenamed('Year(Date)','Year').withColumnRenamed('sum(Lowest)','Lowest').withColumnRenamed('sum(Current)','Current').withColumnRenamed('sum(Last Year)', 'LastYear')
 
 # df_com_avi = df_com_avi.select((lpad(df_com_avi.Month, 2, '0').alias('Month')), )
 
