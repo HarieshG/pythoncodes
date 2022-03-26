@@ -230,11 +230,9 @@ df_com_avi = spark.read.format('csv').option('header',True).option('inferSchema'
 
 # Change date format from 02/12/2022 to 02-12-2022
 df_com_avi = df_com_avi.withColumn('Date', regexp_replace('Date', '/', '-'))
-df_com_avi.show(100)
 df_com_avi = df_com_avi.withColumn('Date',to_date(df_com_avi['Date'],format='MM-dd-yyyy'))
+df_com_avi =df_com_avi.select('Mode', 'Indicator' ,'Date','Lowest','Current','Last Year')
 df_com_avi = df_com_avi.groupBy(month('Date')).sum()
-# Cleaning week num column as it contains improper week format
-df_com_avi = df_com_avi.withColumn('Week Num', df_com_avi['Week Num'].cast(IntegerType()))
 df_com_avi = df_com_avi.na.fill(value=0)
 df_com_avi.show(100)
 # df_com_avi.printSchema()
