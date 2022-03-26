@@ -292,7 +292,7 @@ df_mt = df_mt.withColumn('Date', regexp_replace('Date',  'AM', ''))
 # UDF to convert string to date
 func =  udf (lambda x: datetime.strptime(x, '%d-%m-%Y'), DateType())
 
-df_mt = df_mt.withColumn('Date', date_format(func(col('Date')), 'yyyy-MM-dd'))
+df_mt = df_mt.withColumn('Date', date_format(func(col('Date')), 'YYYY-mm-dd'))
 
 df_mt.groupBy('Date').count().show()
 
