@@ -288,7 +288,7 @@ df_mt = df_mt.withColumn('Date', regexp_replace('Date', '/', '-'))
 df_mt = df_mt.withColumn('Date', regexp_replace('Date',  ' 12:00:...', ''))
 df_mt = df_mt.withColumn('Date', regexp_replace('Date',  'AM', ''))
 df_mt = df_mt.withColumn('Date', to_date(df_mt['Date'],'dd-mm-yyyy'))
-df_mt = df_mt.withColumn('Date', date_format(df_mt['Date'],'yyyy-mm-dd'))
+df_mt = df_mt.withColumn('Date', date_format(df_mt['Date'],'yyyy-MM-dd'))
 
 df_mt.groupBy('Date').count().show()
 
