@@ -232,7 +232,7 @@ df_com_avi = spark.read.format('csv').option('header',True).option('inferSchema'
 df_com_avi = df_com_avi.withColumn('Date', regexp_replace('Date', '/', '-'))
 df_com_avi = df_com_avi.withColumn('Date',to_date(df_com_avi['Date'],format='MM-dd-yyyy'))
 df_com_avi =df_com_avi.select('Mode', 'Indicator' ,'Date','Lowest','Current','Last Year')
-df_com_avi = df_com_avi.groupBy('Mode','Indicator',month('Date'), year('Date')).sum('Lowest').alias('Current')
+df_com_avi = df_com_avi.groupBy('Mode','Indicator',month('Date'), year('Date')).sum()
 
 # df_com_avi = df_com_avi.select((lpad(df_com_avi.Month, 2, '0').alias('Month')), )
 
