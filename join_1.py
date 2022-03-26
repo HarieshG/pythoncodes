@@ -232,7 +232,16 @@ df_com_avi = spark.read.format('csv').option('header',True).option('inferSchema'
 df_com_avi = df_com_avi.withColumn('Date', regexp_replace('Date', '/', '-'))
 df_com_avi = df_com_avi.withColumn('Date',to_date(df_com_avi['Date'],format='MM-dd-yyyy'))
 df_com_avi =df_com_avi.select('Mode', 'Indicator' ,'Date','Lowest','Current','Last Year')
-df_com_avi = df_com_avi.groupBy(month('Date'), year('Date')).sum()
+df_com_avi = df_com_avi.groupBy('Mode','Indicator',month('Date'), year('Date')).sum()
+
+# df_com_avi = df_com_avi.select((lpad(df_com_avi.Month, 2, '0').alias('Month')), "Year", "DOMESTIC", "INTERNATIONAL", "TOTAL")
+
+#  # concats the month and year to single date column
+#  df_mon_avi = df_mon_avi.select(concat_ws('', df_mon_avi.Month, df_mon_avi.Year).alias('Date'), df_mon_avi["*"])
+
+#  # convers the date column's type from string to date
+#  df_mon_avi = df_mon_avi.withColumn('Date', to_date(df_mon_avi['Date'], format='MMyyyy'))
+
 df_com_avi = df_com_avi.na.fill(value=0)
 df_com_avi.show(100)
 # df_com_avi.printSchema()
