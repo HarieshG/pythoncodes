@@ -246,52 +246,52 @@ df_com_avi = df_com_avi.withColumn('Date', to_date(df_com_avi['Date'], format='M
 
 df_com_avi = df_com_avi.drop('Month','Year')
 df_com_avi = df_com_avi.na.fill(value=0)
-df_com_avi.show(100)
-# df_com_avi.printSchema()
 
-# #----------------------------Monthly Aviation--------------------------------------------------------------------
-# df_mon_avi = spark.read.format('csv').option('header', True).option('inferSchema', True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/monthly_aviation.csv")
-# # converts the month from single digit to double digit
-# df_mon_avi = df_mon_avi.select((lpad(df_mon_avi.Month, 2, '0').alias('Month')), "Year", "DOMESTIC", "INTERNATIONAL", "TOTAL")
 
-# # concats the month and year to single date column
-# df_mon_avi = df_mon_avi.select(concat_ws('', df_mon_avi.Month, df_mon_avi.Year).alias('Date'), df_mon_avi["*"])
+#----------------------------Monthly Aviation--------------------------------------------------------------------
+df_mon_avi = spark.read.format('csv').option('header', True).option('inferSchema', True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/monthly_aviation.csv")
+# converts the month from single digit to double digit
+df_mon_avi = df_mon_avi.select((lpad(df_mon_avi.Month, 2, '0').alias('Month')), "Year", "DOMESTIC", "INTERNATIONAL", "TOTAL")
 
-# # convers the date column's type from string to date
-# df_mon_avi = df_mon_avi.withColumn('Date', to_date(df_mon_avi['Date'], format='MMyyyy'))
+# concats the month and year to single date column
+df_mon_avi = df_mon_avi.select(concat_ws('', df_mon_avi.Month, df_mon_avi.Year).alias('Date'), df_mon_avi["*"])
 
-# # selects four major needed data columns from the data frame
-# df_mon_avi = df_mon_avi.select("Date", "DOMESTIC", "INTERNATIONAL", "TOTAL")
+# convers the date column's type from string to date
+df_mon_avi = df_mon_avi.withColumn('Date', to_date(df_mon_avi['Date'], format='MMyyyy'))
 
-# df_mon_avi.show()
-# df_mon_avi.printSchema()
+# selects four major needed data columns from the data frame
+df_mon_avi = df_mon_avi.select("Date", "DOMESTIC", "INTERNATIONAL", "TOTAL")
 
-# #----------------------------------Monthly Transportation---------------------------------------
-# #reading monthly transportation statistics data
-# df_mt = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/Monthly_Transportation_Statistics.csv")
+df_mon_avi.show()
+df_mon_avi.printSchema()
 
-# #removing "." from column names (presence of "." in the column names throws error)
-# new_col = []
-# for c in df_mt.columns:
-#         a = c.replace(".","")
-#         a = a.replace("(","")
-#         a = a.replace(")","")
-#         new_col.append(a)
+#----------------------------------Monthly Transportation---------------------------------------
+#reading monthly transportation statistics data
+df_mt = spark.read.format('csv').option('header',True).option('inferSchema',True).load("wasbs://datasets@trainingbatchaccount.blob.core.windows.net/Monthly_Transportation_Statistics.csv")
 
-# df_mt = df_mt.toDF(*new_col)
+#removing "." from column names (presence of "." in the column names throws error)
+new_col = []
+for c in df_mt.columns:
+        a = c.replace(".","")
+        a = a.replace("(","")
+        a = a.replace(")","")
+        new_col.append(a)
 
-# #dropping unnecessary column
-# df_mt = df_mt.drop('Index')
+df_mt = df_mt.toDF(*new_col)
 
-# #date format changing
-# df_mt = df_mt.na.drop(how = "all", thresh = None, subset = None )
-# df_mt = df_mt.na.fill(value = 0)
-# df_mt = df_mt.withColumn('Date', regexp_replace('Date', '/', '-'))
-# df_mt = df_mt.withColumn('Date', regexp_replace('Date',  ' 12:00:...', ''))
-# df_mt = df_mt.withColumn('Date', regexp_replace('Date',  'AM', ''))
-# df_mt = df_mt.withColumn('Date', to_date(df_mt['Date'],'dd-mm-yyyy'))
+#dropping unnecessary column
+df_mt = df_mt.drop('Index')
 
-# #--------------------------------------------Join Monthly aviation & Monthly Transportation---------------------------
-# df_ma_mt = df_mon_avi.join(df_mt,on=['Date'],how='inner').drop(df_mt.Date)
-# df_ma_mt.show()
+#date format changing
+df_mt = df_mt.na.drop(how = "all", thresh = None, subset = None )
+df_mt = df_mt.na.fill(value = 0)
+df_mt = df_mt.withColumn('Date', regexp_replace('Date', '/', '-'))
+df_mt = df_mt.withColumn('Date', regexp_replace('Date',  ' 12:00:...', ''))
+df_mt = df_mt.withColumn('Date', regexp_replace('Date',  'AM', ''))
+df_mt = df_mt.withColumn('Date', to_date(df_mt['Date'],'dd-mm-yyyy'))
+
+#--------------------------------------------Join Monthly aviation & Monthly Transportation---------------------------
+df_ma_mt = df_mon_avi.join(df_mt,on=['Date'],how='inner').drop(df_mt.Date)
+df_ma_mt.show()
 # df_ma_mt.printSchema()
+
