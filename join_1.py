@@ -305,5 +305,7 @@ df_join_12 = df_ma_mt.join(df_com_avi,on=['Date'],how='inner').drop(df_com_avi.D
 
 #---------------------------------------------Final JOIN----------------------------------------
 df_final = df_join_11.join(df_join_12,on=['Date'],how='leftouter').drop(df_join_12.Date)
+df_final = df_final.na.fill("")
+df_final = df_final.na.fill(value=0)
 df_final.show()
 df_final.printSchema()
